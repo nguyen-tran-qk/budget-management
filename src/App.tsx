@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import Container from '@mui/material/Container';
 import {
   TableContainer,
@@ -9,33 +9,67 @@ import {
   TableCell,
   TableBody,
   Button,
+  styled,
+  Stack,
 } from '@mui/material';
 import EntryDialog from './EntryDialog';
 import { BudgetContext } from './BudgetContext';
+import DeleteEntryAlert from './DeleteEntryAlert';
+import { Dinero } from 'dinero.js';
+import { Euro } from './utils';
+
+const DescriptionTableCell = styled(TableCell)({
+  whiteSpace: 'pre-wrap',
+});
 
 function App() {
   const { budgetEntries } = useContext(BudgetContext);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [updatingEntryID, setUpdatingEntryID] = React.useState<string>();
+  const [isEntryDialogOpen, setIsEntryDialogOpen] = useState(false);
+  const [updatingEntryID, setUpdatingEntryID] = useState<string>();
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [deletingEntryID, setDeletingEntryID] = useState<string>();
+  const totalAmount = useMemo<Dinero>(
+    () => budgetEntries.reduce((total, curr) => total.add(curr.amount), Euro(0)),
+    [budgetEntries]
+  );
 
-  const openDialog = (entryID?: string) => () => {
+  const openEntryDialog = (entryID?: string) => () => {
     setUpdatingEntryID(entryID);
-    setIsDialogOpen(true);
+    setIsEntryDialogOpen(true);
   };
-  const closeDialog = () => setIsDialogOpen(false);
+
+  const closeEntryDialog = () => setIsEntryDialogOpen(false);
+
+  const openDeleteAlert = (entryID: string) => () => {
+    setDeletingEntryID(entryID);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const closeDeleteAlert = () => setIsDeleteAlertOpen(false);
 
   return (
-    <Container maxWidth="sm">
-      <Button variant="contained" onClick={openDialog()}>
-        Add a new entry
-      </Button>
+    <Container maxWidth="sm" sx={{ marginTop: 6 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ marginBottom: 2 }}
+      >
+        <Button variant="contained" onClick={openEntryDialog()}>
+          Add a new entry
+        </Button>
+        <div>
+          <span>Total budget: </span>
+          <b>{totalAmount.toFormat()}</b>
+        </div>
+      </Stack>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Amount</TableCell>
               <TableCell>Description</TableCell>
-              <TableCell></TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -44,16 +78,22 @@ function App() {
                 <TableCell component="th" scope="row">
                   {row.amount.toFormat()}
                 </TableCell>
-                <TableCell>{row.description}</TableCell>
-                <TableCell>
-                  <Button onClick={openDialog(row.id)}>Update</Button>
+                <DescriptionTableCell>{row.description}</DescriptionTableCell>
+                <TableCell align="center">
+                  <Button onClick={openEntryDialog(row.id)}>Edit</Button>
+                  <Button onClick={openDeleteAlert(row.id)}>Delete</Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {isDialogOpen && <EntryDialog open handleClose={closeDialog} entryID={updatingEntryID} />}
+      {isEntryDialogOpen && (
+        <EntryDialog open handleClose={closeEntryDialog} entryID={updatingEntryID} />
+      )}
+      {isDeleteAlertOpen && (
+        <DeleteEntryAlert open handleClose={closeDeleteAlert} entryID={deletingEntryID} />
+      )}
     </Container>
   );
 }

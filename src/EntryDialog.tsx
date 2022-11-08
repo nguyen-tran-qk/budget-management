@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -17,13 +17,23 @@ interface EntryDialogProps {
   entryID?: string;
 }
 
-const AMOUNT_ERROR_MSG = 'Please input the amount with correct format';
+const AMOUNT_ERROR_MSG = 'Please fill in a valid amount';
 
 const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
   const { budgetEntries, setBudgetEntries } = useContext(BudgetContext);
   const [amount, setAmount] = useState<number | ''>('');
   const [amountError, setAmountError] = useState('');
   const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    if (entryID) {
+      const updatingEntry = findEntryById(entryID);
+      if (updatingEntry) {
+        setAmount(updatingEntry.amount.toUnit());
+        setDescription(updatingEntry.description);
+      }
+    }
+  }, [entryID]);
 
   const onAmountInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = evt.target.value;
@@ -58,23 +68,26 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
       return;
     }
 
-    if (!entryID) {
-      let amountInCents;
-      try {
-        amountInCents = parseInt((amount * 100).toString());
-      } catch (error) {
-        setAmountError(AMOUNT_ERROR_MSG);
-        return;
-      }
-      const newEntry = createNewBudgetEntry(amountInCents, description);
-      setBudgetEntries([...budgetEntries, newEntry]);
-      handleClose();
+    let amountInCents;
+    try {
+      amountInCents = parseInt((amount * 100).toString());
+    } catch (error) {
+      setAmountError(AMOUNT_ERROR_MSG);
+      return;
     }
+    const newEntry = createNewBudgetEntry(amountInCents, description);
+    const newEntriesList = entryID
+      ? budgetEntries.map((item) => (item.id === entryID ? newEntry : item))
+      : [...budgetEntries, newEntry];
+    setBudgetEntries(newEntriesList);
+    handleClose();
   };
 
+  const findEntryById = (entryID: string) => budgetEntries.find((item) => item.id === entryID);
+
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>{entryID ? 'Update entry' : 'Add a new entry'}</DialogTitle>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm">
+      <DialogTitle>{entryID ? 'Edit entry' : 'Add a new entry'}</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
