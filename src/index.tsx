@@ -1,27 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import BudgetDashboard from './BudgetDashboard';
 import reportWebVitals from './reportWebVitals';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { BudgetEntry } from './types';
-import { createNewBudgetEntry } from './utils';
 import { BudgetContextProvider } from './BudgetContext';
-
-const dummyEntries: BudgetEntry[] = [
-  createNewBudgetEntry(12087, 'Collecting debt from John'),
-  createNewBudgetEntry(7700, 'Monthly saving'),
-];
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <BudgetContextProvider initialValue={dummyEntries}>
-      <App />
+    <BudgetContextProvider initialValue={[]}>
+      <BudgetDashboard />
     </BudgetContextProvider>
   </React.StrictMode>
 );
