@@ -16,7 +16,7 @@ interface EntryDialogProps {
   entryID?: string;
 }
 
-const AMOUNT_ERROR_MSG = 'Please fill in a valid amount';
+export const AMOUNT_ERROR_MSG = 'Please fill in a valid amount';
 
 /** The dialog to add a new entry or edit an existing one */
 const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
@@ -92,7 +92,7 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm">
-      <DialogTitle>{entryID ? 'Edit entry' : 'Add a new entry'}</DialogTitle>
+      <DialogTitle data-testid="title">{entryID ? 'Edit entry' : 'Add a new entry'}</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -107,6 +107,9 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
           error={!!amountError}
           helperText={amountError}
           placeholder="100,99"
+          inputProps={{
+            'data-testid': 'amount-input',
+          }}
         />
         <TextField
           margin="dense"
@@ -122,7 +125,9 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={onSubmit}>{entryID ? 'Update' : 'Add'}</Button>
+        <Button onClick={onSubmit} data-testid="submit-button">
+          {entryID ? 'Update' : 'Add'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

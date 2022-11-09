@@ -5,7 +5,7 @@ import { BudgetContext } from '../contexts/BudgetContext';
 interface DeleteEntryAlertProps {
   open: boolean;
   handleClose: () => void;
-  entryID?: string;
+  entryID: string;
 }
 
 /** Dialog to delete an entry upon user's confirmation */
@@ -29,17 +29,17 @@ const DeleteEntryAlert = ({ open, handleClose, entryID }: DeleteEntryAlertProps)
     <Dialog open={open} onClose={handleClose}>
       {error ? (
         <>
-          <DialogTitle>Error: Failed to delete entry. Please try again</DialogTitle>
+          <DialogTitle data-testid="error-dialog-title">Error: Failed to delete entry. Please try again</DialogTitle>
           <DialogActions>
-            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleClose} data-testid="error-close-button">Close</Button>
           </DialogActions>
         </>
       ) : (
         <>
-          <DialogTitle>Are you sure you want to delete this entry?</DialogTitle>
+          <DialogTitle data-testid="dialog-title">Are you sure you want to delete this entry?</DialogTitle>
           <DialogActions>
-            <Button onClick={handleClose}>No, cancel</Button>
-            <Button onClick={deleteEntryAndClose} autoFocus>
+            <Button onClick={handleClose} data-testid="cancel-button">No, cancel</Button>
+            <Button onClick={deleteEntryAndClose} autoFocus data-testid="delete-button">
               Yes, delete
             </Button>
           </DialogActions>

@@ -102,7 +102,7 @@ const BudgetDashboard = () => {
       {isEntryDialogOpen && (
         <EntryDialog open handleClose={closeEntryDialog} entryID={updatingEntryID} />
       )}
-      {isDeleteAlertOpen && (
+      {isDeleteAlertOpen && !!deletingEntryID && (
         <DeleteEntryAlert open handleClose={closeDeleteAlert} entryID={deletingEntryID} />
       )}
     </Container>
