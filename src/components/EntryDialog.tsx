@@ -7,9 +7,8 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import { BudgetEntry } from './types';
-import { BudgetContext } from './BudgetContext';
-import { createNewBudgetEntry } from './utils';
+import { BudgetContext } from '../contexts/BudgetContext';
+import { createNewBudgetEntry } from '../utils';
 
 interface EntryDialogProps {
   open: boolean;
@@ -19,6 +18,7 @@ interface EntryDialogProps {
 
 const AMOUNT_ERROR_MSG = 'Please fill in a valid amount';
 
+/** The dialog to add a new entry or edit an existing one */
 const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
   const { budgetEntries, setBudgetEntries } = useContext(BudgetContext);
   const [amount, setAmount] = useState<number | ''>('');
@@ -27,6 +27,7 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
 
   useEffect(() => {
     if (entryID) {
+      // find the entry to edit and populate its details to the form
       const updatingEntry = findEntryById(entryID);
       if (updatingEntry) {
         setAmount(updatingEntry.amount.toUnit());
@@ -39,6 +40,7 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
     const inputValue = evt.target.value;
     try {
       if (!inputValue) {
+        // the amount can't be empty
         setAmountError(AMOUNT_ERROR_MSG);
         setAmount('');
       } else {
@@ -52,6 +54,7 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
         setAmount(parseFloat(inputValue));
       }
     } catch (error) {
+      // most likely the input value has invalid format
       setAmountError(AMOUNT_ERROR_MSG);
     }
   };
@@ -61,6 +64,8 @@ const EntryDialog = ({ open, handleClose, entryID }: EntryDialogProps) => {
   };
 
   const onSubmit = () => {
+    // check for required data again
+    // and don't submit data with errors
     if (!amount) {
       setAmountError(AMOUNT_ERROR_MSG);
       return;

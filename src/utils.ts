@@ -1,8 +1,6 @@
 import DineroFactory, { Dinero } from 'dinero.js';
 import { BudgetEntry } from './types';
 
-export const ENTRIES_STORAGE_KEY = 'budget_entries';
-
 export const Euro = (cents: number): Dinero => DineroFactory({ amount: cents, currency: 'EUR' });
 
 const generateID = () => {

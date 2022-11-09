@@ -14,15 +14,18 @@ import {
   Typography,
 } from '@mui/material';
 import EntryDialog from './EntryDialog';
-import { BudgetContext } from './BudgetContext';
+import { BudgetContext } from '../contexts/BudgetContext';
 import DeleteEntryAlert from './DeleteEntryAlert';
 import { Dinero } from 'dinero.js';
-import { Euro } from './utils';
+import { Euro } from '../utils';
 
 const DescriptionTableCell = styled(TableCell)({
   whiteSpace: 'pre-wrap',
 });
 
+/**
+ * The dashboard view to display and manage budget entries
+ */
 const BudgetDashboard = () => {
   const { budgetEntries } = useContext(BudgetContext);
   const [isEntryDialogOpen, setIsEntryDialogOpen] = useState(false);
@@ -36,6 +39,8 @@ const BudgetDashboard = () => {
   );
 
   const openEntryDialog = (entryID?: string) => () => {
+    // if entryID is specified, it means an entry needs to be updated
+    // otherwise, we're adding a new entry
     setUpdatingEntryID(entryID);
     setIsEntryDialogOpen(true);
   };
@@ -78,9 +83,7 @@ const BudgetDashboard = () => {
             <TableBody>
               {budgetEntries.map((row) => (
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell component="th" scope="row">
-                    {row.amount.toFormat()}
-                  </TableCell>
+                  <TableCell>{row.amount.toFormat()}</TableCell>
                   <DescriptionTableCell>{row.description}</DescriptionTableCell>
                   <TableCell align="center">
                     <Button onClick={openEntryDialog(row.id)}>Edit</Button>

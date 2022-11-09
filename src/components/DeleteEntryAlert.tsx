@@ -1,6 +1,6 @@
 import { Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { BudgetContext } from './BudgetContext';
+import { BudgetContext } from '../contexts/BudgetContext';
 
 interface DeleteEntryAlertProps {
   open: boolean;
@@ -8,6 +8,7 @@ interface DeleteEntryAlertProps {
   entryID?: string;
 }
 
+/** Dialog to delete an entry upon user's confirmation */
 const DeleteEntryAlert = ({ open, handleClose, entryID }: DeleteEntryAlertProps) => {
   const { budgetEntries, setBudgetEntries } = useContext(BudgetContext);
   const [error, setError] = useState(false);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BudgetEntry } from './types';
+import { BudgetEntry } from '../types';
 
 export interface BudgetContextState {
   budgetEntries: BudgetEntry[];
